@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva de Derecho Tecnológico en Panamá</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Light Stone/Gray background, Dark Gray text, Muted Teal accent) -->
+    <!-- Application Structure Plan: A two-column SPA layout. Left column is a persistent vertical navigation sidebar with all 10 modules, allowing users to see the full curriculum and jump to any topic. Right column displays the content for the selected module. This structure was chosen to transform a dense, linear document into a non-linear, user-controlled learning tool, enhancing navigability and reducing cognitive load compared to simple scrolling. -->
+    <!-- Visualization & Content Choices: Dense legal text is broken into cards, accordions, and lists. Key comparisons (Ley 81 vs GDPR) are interactive HTML tables. Abstract concepts are visualized using Chart.js doughnut and bar charts (e.g., Incident Response facets, Ley 81 components) to provide quick visual summaries. Process flows (e.g., company setup, case study) are represented with structured HTML/CSS diagrams. This avoids a wall of text, making complex information more approachable and memorable. All visualizations are rendered on Canvas via Chart.js. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        .module-content {
+            display: none;
+        }
+        .module-content.active {
+            display: block;
+        }
+        .nav-link.active {
+            background-color: #0d9488;
+            color: white;
+            font-weight: 600;
+        }
+        .phase-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #475569;
+            font-weight: 700;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            padding-left: 0.75rem;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .table-responsive table {
+            width: 100%;
+            min-width: 800px;
+        }
+        .step-diagram {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .step {
+            flex: 1 1 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        .step-number {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background-color: #0d9488;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            border: 3px solid #ccfbf1;
+        }
+        .step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -20px;
+            top: 1rem;
+            color: #0d9488;
+            font-size: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .step:not(:last-child)::after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <div id="app-container" class="flex flex-col md:flex-row min-h-screen">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-full md:w-72 bg-white border-r border-stone-200 p-4 md:p-6 transition-all duration-300">
+            <h1 class="text-xl font-bold text-teal-700 mb-1">Derecho Tecnológico</h1>
+            <p class="text-sm text-stone-500 mb-6">Guía Interactiva para Panamá</p>
+            
+            <nav id="module-nav" class="space-y-1">
+                <div class="phase-title">Fase I: Fundamentos</div>
+                <a href="#module-1" class="nav-link block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:bg-teal-50">1. Estructura y Operación</a>
+                <a href="#module-2" class="nav-link block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:bg-teal-50">2. Propiedad Intelectual</a>
+                
+                <div class="phase-title">Fase II: Dominios Centrales</div>
+                <a href="#module-3" class="nav-link block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:bg-teal-50">3. Protección de Datos (Ley 81)</a>
+                <a href="#module-4" class="nav-link block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:bg-teal-50">4. Cumplimiento Práctico</a>
+                <a href="#module-5" class="nav-link block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:bg-teal-50">5. Comercio Electrónico</a>
+
+                <div class="phase-title">Fase III: Práctica Contractual</div>
+                <a href="#module-6" class="nav-link block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:bg-teal-50">6. Contratación Tecnológica</a>
+                <a href="#module-7" class="nav-link block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:bg-teal-50">7. Ciberseguridad</a>
+
+                <div class="phase-title">Fase IV: Estrategia y Fronteras</div>
+                <a href="#module-8" class="nav-link block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:bg-teal-50">8. Criptoactivos y Blockchain</a>
+                <a href="#module-9" class="nav-link block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:bg-teal-50">9. Derecho Laboral Tech</a>
+                <a href="#module-10" class="nav-link block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:bg-teal-50">10. El Abogado como Socio</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10 bg-stone-50 overflow-y-auto">
+            
+            <div id="module-1" class="module-content">
+                <h2 class="text-3xl font-bold text-stone-900 mb-2">Módulo 1: Estructuración y Operación de una Empresa Tecnológica</h2>
+                <p class="text-stone-600 mb-8">Este módulo explora los cimientos legales y fiscales para establecer y operar una empresa de tecnología en Panamá. Cubre desde la elección de la estructura corporativa hasta las obligaciones de cumplimiento diarias, un paso crucial para mitigar riesgos desde el inicio.</p>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Vehículo Corporativo: La Sociedad Anónima (S.A.)</h3>
+                    <p class="mb-4">Para una empresa de tecnología con ambiciones de crecimiento, la Sociedad Anónima (S.A.) es la opción preferida en Panamá. Ofrece protección a los accionistas y flexibilidad para atraer inversión.</p>
+                    <div class="grid md:grid-cols-3 gap-4 text-center">
+                        <div class="bg-teal-50 p-4 rounded-lg">
+                            <h4 class="font-bold">Responsabilidad Limitada</h4>
+                            <p class="text-sm text-teal-800">El patrimonio de los accionistas está protegido. La responsabilidad se limita al capital aportado.</p>
+                        </div>
+                        <div class="bg-teal-50 p-4 rounded-lg">
+                            <h4 class="font-bold">Flexibilidad de Capital</h4>
+                            <p class="text-sm text-teal-800">Permite emitir diferentes clases de acciones, facilitando rondas de inversión.</p>
+                        </div>
+                        <div class="bg-teal-50 p-4 rounded-lg">
+                            <h4 class="font-bold">Reconocimiento Global</h4>
+                            <p class="text-sm text-teal-800">Estructura aceptada y reconocida por inversionistas internacionales.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Proceso de Constitución de una S.A.</h3>
+                    <p class="mb-6">El proceso es eficiente y puede gestionarse de forma remota. Estos son los pasos clave.</p>
+                    <div class="step-diagram">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h4 class="font-semibold">Pacto Social</h4>
+                            <p class="text-sm text-stone-600">Redacción y firma del documento fundacional (Ley 32 de 1927).</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h4 class="font-semibold">Protocolización</h4>
+                            <p class="text-sm text-stone-600">Un Notario Público da fe del documento.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h4 class="font-semibold">Inscripción</h4>
+                            <p class="text-sm text-stone-600">Se inscribe en el Registro Público de Panamá.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold mb-4">Obligaciones de Cumplimiento Esenciales</h3>
+                    <p class="mb-4">Una vez constituida, la empresa debe cumplir con varias obligaciones para operar legalmente.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <span class="text-teal-600 font-bold mr-3">✓</span>
+                            <div><strong>RUC (Registro Único de Contribuyente):</strong> Indispensable para facturar. Se obtiene en la DGI.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-600 font-bold mr-3">✓</span>
+                            <div><strong>Aviso de Operaciones:</strong> La licencia comercial de Panamá, tramitada en el portal Panamá Emprende.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-600 font-bold mr-3">✓</span>
+                            <div><strong>Obligaciones Fiscales:</strong> Declaraciones mensuales de ITBMS y anuales de ISR. Adopción de facturación electrónica.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-600 font-bold mr-3">✓</span>
+                            <div><strong>Cumplimiento de Transparencia:</strong> Reporte al Registro Único de Beneficiarios Finales (RUBF) y, si aplica, implementación de políticas de Debida Diligencia (KYC).</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="module-2" class="module-content">
+                <h2 class="text-3xl font-bold text-stone-900 mb-2">Módulo 2: Propiedad Intelectual como Activo Estratégico</h2>
+                <p class="text-stone-600 mb-8">Para una empresa de tecnología, la Propiedad Intelectual (PI) es su activo más valioso. Este módulo se centra en cómo proteger, gestionar y monetizar el software y los datos bajo la legislación panameña, con un enfoque especial en la titularidad de los derechos.</p>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-semibold mb-4">Protección de Activos Digitales (Ley 64 de 2012)</h3>
+                        <p class="mb-4">La ley panameña ofrece una protección robusta y automática para los activos digitales clave.</p>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold">Software</h4>
+                                <p class="text-sm text-stone-600">Protegido como una obra literaria desde su creación. No requiere registro. Cubre código fuente, objeto y documentación.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Bases de Datos</h4>
+                                <p class="text-sm text-stone-600">Protegidas como "compilaciones" si su estructura (selección y disposición) es una creación intelectual.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-red-500">
+                        <h3 class="text-xl font-semibold mb-4">El Riesgo Crítico: La Titularidad</h3>
+                        <p class="mb-4">Determinar quién es el dueño de la PI es fundamental. Las reglas varían según la relación con el creador.</p>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-red-700">Obras por Encargo (Freelancers)</h4>
+                                <p class="text-sm text-stone-600"><strong>¡Punto de alto riesgo!</strong> No hay presunción de cesión de derechos a la empresa. Sin una cláusula de cesión explícita y completa en el contrato, la titularidad de la PI permanece con el desarrollador independiente. Esto es un riesgo existencial para la empresa.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Obras en Relación Laboral</h4>
+                                <p class="text-sm text-stone-600">Se presume que los derechos se ceden al empleador para sus actividades habituales, pero siempre es mejor confirmarlo por contrato.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="module-3" class="module-content">
+                <h2 class="text-3xl font-bold text-stone-900 mb-2">Módulo 3: Régimen de Protección de Datos Personales (Ley 81)</h2>
+                <p class="text-stone-600 mb-8">La Ley 81 de 2019 es la normativa más importante para la economía digital en Panamá. Este módulo desglosa su alcance, principios, roles y los derechos que otorga a los individuos, comparándola con el RGPD europeo para una visión global.</p>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Componentes Clave de la Ley 81</h3>
+                    <p class="mb-6">La ley se estructura en torno a principios rectores, roles definidos y derechos para los titulares de datos.</p>
+                    <div class="chart-container">
+                        <canvas id="ley81Chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold mb-4">Comparativa: Ley 81 de Panamá vs. RGPD de la UE</h3>
+                    <p class="mb-6">Aunque inspirada en el RGPD, la Ley 81 tiene diferencias clave que toda empresa global debe conocer.</p>
+                    <div class="table-responsive">
+                        <table class="min-w-full divide-y divide-stone-200">
+                            <thead class="bg-stone-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Característica</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Ley 81 (Panamá)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">RGPD (UE)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Insight Estratégico</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-stone-200">
+                                <tr class="hover:bg-stone-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-stone-900">Roles Principales</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500">Responsable, Custodio</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500">Responsable, Encargado</td>
+                                    <td class="px-6 py-4 text-sm text-stone-500">El "Custodio" es más limitado que el "Encargado". Los contratos deben ser precisos.</td>
+                                </tr>
+                                <tr class="hover:bg-stone-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-stone-900">Sanciones</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500">Hasta B/.10,000</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500">Hasta €20M o 4% facturación global</td>
+                                    <td class="px-6 py-4 text-sm text-stone-500">El riesgo financiero de un incumplimiento con datos de la UE es órdenes de magnitud mayor.</td>
+                                </tr>
+                                <tr class="hover:bg-stone-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-stone-900">Transferencias Int.</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500">Requiere nivel de protección "equivalente"</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500">Requiere decisión de adecuación, CCT, etc.</td>
+                                    <td class="px-6 py-4 text-sm text-stone-500">Panamá no ha emitido una lista de países adecuados. En la práctica, se deben usar garantías contractuales (CCT).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="module-4" class="module-content">
+                <h2 class="text-3xl font-bold text-stone-900 mb-2">Módulo 4: Cumplimiento Práctico en Protección de Datos</h2>
+                <p class="text-stone-600 mb-8">Este módulo traduce la teoría de la Ley 81 en acciones concretas. Es el manual de operaciones para implementar un programa de privacidad, gestionar incidentes y manejar flujos de datos transfronterizos.</p>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-semibold mb-4">Programa de Gestión de Privacidad</h3>
+                        <p class="mb-4">La ley exige un enfoque proactivo. Esto se materializa en un programa de gobernanza de datos que incluye:</p>
+                        <ul class="space-y-3 list-disc list-inside text-stone-600">
+                            <li>Redacción de Políticas de Privacidad claras.</li>
+                            <li>Diseño de Avisos de Consentimiento informados.</li>
+                            <li>Capacitación continua del personal.</li>
+                            <li>Nombramiento de un Oficial de Protección de Datos (DPO) si es requerido.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-semibold mb-4">Gestión de Violaciones de Seguridad</h3>
+                        <p class="mb-4">La normativa establece un protocolo claro para la gestión de incidentes:</p>
+                        <ol class="space-y-3 list-decimal list-inside text-stone-600">
+                            <li><strong>Evaluar:</strong> Determinar si existe un "riesgo significativo" para los derechos de los titulares.</li>
+                            <li><strong>Notificar:</strong> Si hay riesgo, notificar a la ANTAI y a los afectados en un plazo de 72 horas.</li>
+                            <li><strong>Registrar:</strong> Mantener un registro interno de todas las violaciones de seguridad, incluso las no notificadas.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div id="module-5" class="module-content">
+                <h2 class="text-3xl font-bold text-stone-900 mb-2">Módulo 5: Comercio Electrónico, Firmas y Documentos Electrónicos</h2>
+                <p class="text-stone-600 mb-8">Este módulo aborda la normativa que da validez a las transacciones digitales. Es crucial entender la interacción entre la Ley de Comercio Electrónico y la Ley de Protección al Consumidor para evitar cláusulas nulas en los términos de servicio.</p>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold mb-4">Interacción Regulatoria en una Transacción Digital</h3>
+                    <p class="mb-6">Una sola compra en línea en Panamá está supervisada por múltiples entidades, cada una con un enfoque distinto. El cumplimiento debe ser integral.</p>
+                    <div class="flex flex-col md:flex-row justify-around items-center text-center gap-8 p-4 bg-stone-100 rounded-lg">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-lg text-teal-700">DGCE</h4>
+                            <p class="text-sm text-stone-600">(Comercio Electrónico)</p>
+                            <p class="mt-2">Supervisa la validez de las firmas electrónicas y a los prestadores de certificación.</p>
+                        </div>
+                        <div class="text-2xl text-stone-400">&harr;</div>
+                        <div class="flex-1 border-2 border-teal-600 p-4 rounded-lg bg-white">
+                            <h4 class="font-bold text-lg text-stone-900">Transacción Online</h4>
+                            <p class="text-sm text-stone-600">Compra de un producto o servicio</p>
+                        </div>
+                        <div class="text-2xl text-stone-400">&harr;</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-lg text-teal-700">ACODECO</h4>
+                            <p class="text-sm text-stone-600">(Protección al Consumidor)</p>
+                            <p class="mt-2">Vela por los derechos del consumidor, sancionando cláusulas abusivas y publicidad engañosa.</p>
+                        </div>
+                        <div class="text-2xl text-stone-400">&harr;</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-lg text-teal-700">ANTAI</h4>
+                            <p class="text-sm text-stone-600">(Protección de Datos)</p>
+                            <p class="mt-2">Protege los datos personales recopilados durante la transacción, aplicando la Ley 81.</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                        <h4 class="font-semibold text-red-800">Advertencia sobre Términos de Servicio</h4>
+                        <p class="text-sm text-red-700">Cláusulas comunes en contratos de EE.UU. como "el servicio se proporciona 'tal cual' (as is)" o limitaciones de responsabilidad extremas son **nulas de pleno derecho** en Panamá bajo la Ley 45 de Protección al Consumidor. Copiar y pegar términos de otra jurisdicción es un error legal grave.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="module-6" class="module-content">
+                <h2 class="text-3xl font-bold text-stone-900 mb-2">Módulo 6: Contratación Tecnológica Esencial</h2>
+                <p class="text-stone-600 mb-8">Este módulo se enfoca en la redacción y negociación de los contratos más críticos en el ecosistema tecnológico. Un contrato bien redactado es la mejor herramienta de prevención de disputas.</p>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold mb-4">Checklist de Cláusulas Indispensables</h3>
+                    <p class="mb-6">Esta tabla resume las cláusulas clave que no pueden faltar en los contratos tecnológicos más comunes. Use esto como una guía rápida durante la revisión y negociación.</p>
+                    <div class="table-responsive">
+                        <table class="min-w-full divide-y divide-stone-200">
+                            <thead class="bg-stone-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Cláusula Clave</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-stone-500 uppercase tracking-wider">Desarrollo Software</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-stone-500 uppercase tracking-wider">SaaS/Cloud</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-stone-500 uppercase tracking-wider">NDA</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-stone-200">
+                                <tr class="hover:bg-stone-50">
+                                    <td class="px-6 py-4 text-sm font-medium text-stone-900">Objeto y Alcance</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                </tr>
+                                <tr class="hover:bg-stone-50">
+                                    <td class="px-6 py-4 text-sm font-medium text-stone-900">Propiedad Intelectual</td>
+                                    <td class="px-6 py-4 text-center text-red-600 font-bold">❗</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                </tr>
+                                <tr class="hover:bg-stone-50">
+                                    <td class="px-6 py-4 text-sm font-medium text-stone-900">Protección de Datos (DPA)</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                    <td class="px-6 py-4 text-center text-red-600 font-bold">❗</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                </tr>
+                                <tr class="hover:bg-stone-50">
+                                    <td class="px-6 py-4 text-sm font-medium text-stone-900">Garantías y SLAs</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                    <td class="px-6 py-4 text-center text-red-600 font-bold">❗</td>
+                                    <td class="px-6 py-4 text-center text-stone-400">N/A</td>
+                                </tr>
+                                <tr class="hover:bg-stone-50">
+                                    <td class="px-6 py-4 text-sm font-medium text-stone-900">Limitación de Responsabilidad</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                </tr>
+                                <tr class="hover:bg-stone-50">
+                                    <td class="px-6 py-4 text-sm font-medium text-stone-900">Terminación y Estrategia de Salida</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                    <td class="px-6 py-4 text-center text-red-600 font-bold">❗</td>
+                                    <td class="px-6 py-4 text-center text-teal-600 font-bold">✅</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-xs text-stone-500 mt-2"><span class="text-red-600 font-bold">❗</span> Indica una cláusula de importancia crítica y alto riesgo en ese tipo de contrato.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="module-7" class="module-content">
+                <h2 class="text-3xl font-bold text-stone-900 mb-2">Módulo 7: Ciberseguridad y Gestión de Incidentes</h2>
+                <p class="text-stone-600 mb-8">El abogado de tecnología debe estar preparado para el peor escenario: un ciberataque. La gestión legal de un incidente es un acto de equilibrio que debe ejecutarse en tres pistas simultáneas para mitigar el daño y cumplir con la ley.</p>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Las 3 Pistas de la Respuesta Legal a Incidentes</h3>
+                    <p class="mb-6">Un plan de respuesta que solo se enfoca en la recuperación técnica es incompleto. El abogado debe coordinar estas tres áreas en paralelo desde el primer minuto.</p>
+                    <div class="chart-container">
+                        <canvas id="incidentResponseChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold mb-4">Delitos Informáticos Clave en el Código Penal de Panamá</h3>
+                    <p class="mb-4">El marco legal panameño, alineado con el Convenio de Budapest, tipifica claramente los ciberdelitos.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-stone-100 p-4 rounded-lg">
+                            <h4 class="font-semibold">Acceso Ilícito (Art. 289)</h4>
+                            <p class="text-sm">Ingresar o utilizar indebidamente un sistema. Pena: 2-4 años.</p>
+                        </div>
+                        <div class="bg-stone-100 p-4 rounded-lg">
+                            <h4 class="font-semibold">Ataque a la Integridad de Datos (Art. 290)</h4>
+                            <p class="text-sm">Copiar, modificar o borrar datos indebidamente. Pena: 2-4 años.</p>
+                        </div>
+                        <div class="bg-stone-100 p-4 rounded-lg">
+                            <h4 class="font-semibold">Ataque a la Integridad de Sistemas (Art. 290-A)</h4>
+                            <p class="text-sm">Obstaculizar o interferir el funcionamiento de un sistema. Pena: 3-5 años.</p>
+                        </div>
+                        <div class="bg-stone-100 p-4 rounded-lg">
+                            <h4 class="font-semibold">Agravantes (Art. 291)</h4>
+                            <p class="text-sm">Las penas aumentan si el delito es con fines de lucro o contra sistemas gubernamentales o financieros.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="module-8" class="module-content">
+                <h2 class="text-3xl font-bold text-stone-900 mb-2">Módulo 8: Regulación de Criptoactivos y Blockchain</h2>
+                <p class="text-stone-600 mb-8">Esta es un área de alta incertidumbre en Panamá. Tras el veto a la "Ley Cripto", la regulación se rige por los marcos existentes, principalmente el de prevención de blanqueo de capitales, lo que genera riesgos y ambigüedad.</p>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
+                    <h3 class="text-xl font-semibold mb-4 text-yellow-800">Estado Regulatorio Actual</h3>
+                    <ul class="space-y-4">
+                        <li>
+                            <h4 class="font-semibold">No hay "Ley Cripto" específica</h4>
+                            <p class="text-sm text-stone-600">El Proyecto de Ley 697 fue vetado en 2022. No existe un marco a medida para los criptoactivos.</p>
+                        </li>
+                        <li>
+                            <h4 class="font-semibold">Regulación por Defecto: Ley 23 de 2015 (ALD/CFT)</h4>
+                            <p class="text-sm text-stone-600">Los Proveedores de Servicios de Activos Virtuales (VASP) son considerados "sujetos obligados" y deben cumplir con las estrictas normas de prevención de blanqueo de capitales bajo la supervisión de la UAF.</p>
+                        </li>
+                        <li>
+                            <h4 class="font-semibold">Riesgo Bancario Significativo</h4>
+                            <p class="text-sm text-stone-600">La ambigüedad regulatoria y la postura cautelosa de la Superintendencia de Bancos hacen que la mayoría de las instituciones financieras sean reacias a ofrecer servicios a empresas del sector.</p>
+                        </li>
+                    </ul>
+                    <p class="mt-6 text-sm font-medium text-yellow-900 bg-yellow-100 p-3 rounded-md">El consejo legal en esta área debe ser extremadamente conservador, enfocándose en un cumplimiento de ALD/CFT más robusto que el de una entidad financiera tradicional.</p>
+                </div>
+            </div>
+
+            <div id="module-9" class="module-content">
+                <h2 class="text-3xl font-bold text-stone-900 mb-2">Módulo 9: Derecho Laboral y Compensación en el Sector Tecnológico</h2>
+                <p class="text-stone-600 mb-8">Atraer y retener talento es clave. Este módulo aborda cómo estructurar la compensación, especialmente los planes de opciones sobre acciones (stock options), en un país sin una legislación específica para ellos.</p>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Stock Options: Estructura y Fiscalidad en Panamá</h3>
+                    <p class="mb-4">Al no existir una ley específica, los planes de stock options deben diseñarse bajo las reglas generales de la Ley de Sociedades Anónimas y el Código Fiscal. Esto crea una zona gris que debe navegarse con prudencia.</p>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-semibold mb-2">Estructura Corporativa</h4>
+                             <ul class="space-y-2 list-disc list-inside text-stone-600 text-sm">
+                                <li>Se rige por la Ley 32 de 1927 (Sociedades Anónimas).</li>
+                                <li>El Pacto Social debe autorizar suficientes acciones.</li>
+                                <li>Se documenta con un "Plan de Opciones" y "Acuerdos de Concesión" individuales.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2">Tratamiento Fiscal (Interpretación)</h4>
+                            <p class="text-sm text-stone-600 mb-4">La interpretación más defendible ante la DGI es la siguiente:</p>
+                             <div class="chart-container h-48">
+                                <canvas id="stockOptionChart"></canvas>
+                            </div>
+                            <p class="text-xs text-center mt-2 text-stone-500">El ingreso gravable se genera al momento del ejercicio de la opción.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="module-10" class="module-content">
+                <h2 class="text-3xl font-bold text-stone-900 mb-2">Módulo 10: El Abogado Tecnológico como Socio de Negocio</h2>
+                <p class="text-stone-600 mb-8">Este módulo finaliza la formación, elevando al abogado de un gestor de cumplimiento a un asesor estratégico. Se trata de integrar el pensamiento legal en el ciclo de vida del producto y la estrategia corporativa para agregar valor real al negocio.</p>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold mb-4">Caso Práctico Final: Integrando el Conocimiento</h3>
+                    <p class="mb-6">Para culminar, se plantea un escenario que obliga a aplicar los conocimientos de todos los módulos. El objetivo es producir un memorando legal que identifique riesgos y proponga soluciones.</p>
+                    
+                    <div class="p-6 bg-stone-100 rounded-lg border border-stone-200">
+                        <h4 class="font-semibold text-lg mb-2">Escenario: Fintech en Panamá</h4>
+                        <p class="mb-4">"Una fintech panameña lanza una app móvil que usa geolocalización para ofrecer descuentos. La app será desarrollada por freelancers en Argentina, los datos se alojarán en AWS en EE.UU., y se ofrecerán stock options a los empleados clave."</p>
+                        
+                        <h5 class="font-semibold mb-2 mt-6">Áreas de Riesgo y Análisis Requerido:</h5>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div class="bg-teal-100 text-teal-900 p-3 rounded-md">
+                                <strong class="block">Propiedad Intelectual</strong>
+                                Cesión de derechos de los freelancers argentinos.
+                            </div>
+                            <div class="bg-teal-100 text-teal-900 p-3 rounded-md">
+                                <strong class="block">Protección de Datos</strong>
+                                Transferencia internacional de datos a EE.UU. (geolocalización).
+                            </div>
+                            <div class="bg-teal-100 text-teal-900 p-3 rounded-md">
+                                <strong class="block">Contratación</strong>
+                                Contrato de servicios en la nube (AWS) y contrato de custodio (DPA).
+                            </div>
+                            <div class="bg-teal-100 text-teal-900 p-3 rounded-md">
+                                <strong class="block">Derecho Laboral</strong>
+                                Estructuración legal y fiscal del plan de stock options.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const moduleContents = document.querySelectorAll('.module-content');
+            let ley81Chart, incidentResponseChart, stockOptionChart;
+
+            function navigateToModule(hash) {
+                const targetModule = document.querySelector(hash);
+                if (!targetModule) return;
+
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === hash) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+
+                moduleContents.forEach(content => {
+                    if ('#' + content.id === hash) {
+                        content.classList.add('active');
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+                
+                window.scrollTo(0, 0);
+                initCharts(hash);
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const hash = this.getAttribute('href');
+                    window.location.hash = hash;
+                });
+            });
+
+            window.addEventListener('hashchange', () => {
+                const hash = window.location.hash || '#module-1';
+                navigateToModule(hash);
+            });
+            
+            function initCharts(moduleHash) {
+                if (moduleHash === '#module-3' && !ley81Chart) {
+                    const ctx = document.getElementById('ley81Chart').getContext('2d');
+                    ley81Chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Principios Rectores', 'Roles Clave', 'Derechos ARCO-P'],
+                            datasets: [{
+                                label: 'Componentes de la Ley 81',
+                                data: [9, 2, 5],
+                                backgroundColor: ['#14b8a6', '#f97316', '#3b82f6'],
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                        }
+                    });
+                }
+
+                if (moduleHash === '#module-7' && !incidentResponseChart) {
+                    const ctx = document.getElementById('incidentResponseChart').getContext('2d');
+                    incidentResponseChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Pista de Privacidad (Ley 81)', 'Pista Penal (Código Penal)', 'Pista Contractual (SLAs, NDAs)'],
+                            datasets: [{
+                                data: [33.3, 33.3, 33.3],
+                                backgroundColor: ['#3b82f6', '#ef4444', '#f97316'],
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.label;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                if (moduleHash === '#module-9' && !stockOptionChart) {
+                    const ctx = document.getElementById('stockOptionChart').getContext('2d');
+                    stockOptionChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Ingreso Gravable'],
+                            datasets: [
+                                {
+                                    label: 'Precio de Ejercicio',
+                                    data: [5],
+                                    backgroundColor: '#f97316',
+                                },
+                                {
+                                    label: 'Valor de Mercado',
+                                    data: [20],
+                                    backgroundColor: '#14b8a6',
+                                }
+                            ]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: { stacked: true, display: false },
+                                y: { stacked: true, display: false }
+                            },
+                            plugins: {
+                                legend: { position: 'bottom' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.dataset.label || '';
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            if (context.parsed.x !== null) {
+                                                if (label === 'Valor de Mercado: ') {
+                                                   const bargainElement = context.chart.data.datasets[1].data[0] - context.chart.data.datasets[0].data[0];
+                                                   return `Ingreso Gravable = Valor Mercado (${context.parsed.x}) - Precio Ejercicio (${context.chart.data.datasets[0].data[0]}) = ${bargainElement}`;
+                                                }
+                                                return `${label} ${context.parsed.x}`;
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            const initialHash = window.location.hash || '#module-1';
+            navigateToModule(initialHash);
+        });
+    </script>
+</body>
+</html>
